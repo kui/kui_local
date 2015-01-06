@@ -122,40 +122,30 @@ compdef _kitchen kitchen
 
 ############################################################
 ## alias, funcction の設定
+alias less="less -R"
+alias grep="grep --color"
+
+if   ls -F --color &>/dev/null;  then alias ls="ls -F --color=auto"
+elif gls -F --color &>/dev/null; then alias ls="gls -F --color=auto"
+elif ls -F -G &>/dev/null;       then alias ls="ls -F -G"
+fi
+
 if which screen &> /dev/null
 then
     alias s="screen"
     [ $STY ] && alias s="screen -X focus; screen"
 fi
 
-if   ls -F --color &>/dev/null;  then alias ls="ls -F --color"
-elif gls -F --color &>/dev/null; then alias ls="gls -F --color"
-elif ls -F -G &>/dev/null;       then alias ls="ls -F -G"
+# MacPorts coreutils aliases
+if which port &>/dev/null && port installed | grep coreutils &>/dev/null; then
+    cmds=(mv rm cp cut date rmdir mkdir mkfifo ln cp dd wc du base64
+          sha1sum sha224sum sha256sum sha384sum sha512sum split tac tr
+          seq tail tee test touch uniq wc who whoami yes basename chmod
+          chmod md5sum sleep sort echo id true link)
+    for cmd in "${cmds[@]}"
+    do which "g$cmd" &>/dev/null && alias "$cmd=g$cmd"
+    done
 fi
-
-alias grep='grep --color'
-
-function markdown_preview(){
-    if [ $# -ne 1 ]; then
-        echo "error: invalid arguments"
-        echo "usage: $0 markdown_file"
-        return 1;
-    fi
-
-    if [ ! -f "$1" ]; then
-        echo "error: $1 dose not exists"
-        return 1;
-    fi
-
-    md "$1" | w3m -T text/html -dump
-
-    # 縦割りしたときにズレる問題解決
-    if [ $STY ]
-    then
-        sleep 0.2
-        screen -X redisplay
-    fi
-}
 
 # HTTPサーバを立ち上げる
 function serve(){
@@ -514,7 +504,7 @@ update_screen_title() {
 
     local shell=$(echo -n ${SHELL} | sed -e 's/^.*\///')
     local dir=$(print -P '%~' | sed -e 's/ /_/g' | xargs -I '{}' basename "{}")
-    echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
+    screen -X title "${shell}#${dir}"
 }
 [ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
 
