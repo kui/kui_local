@@ -26,6 +26,9 @@ main() {
     fi
     cd "$BASE_DIR"
 
+    git submodule init
+    git submodule update
+
     install_dotfiles
     install_templates
 
