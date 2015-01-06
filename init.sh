@@ -4,7 +4,7 @@
 MACPORTS_INSTALLS=(git screen zsh curl wget coreutils)
 UBUNTU_INSTALLS=(git screen zsh curl wget ssh build-essential)
 PLATFORM="$(
-    if lsb_release -a | grep '^Description' | grep 'Ubuntu' &>/dev/null; then
+    if which lsb_release &>/dev/null && lsb_release -a | grep 'Ubuntu' &>/dev/null; then
         echo "Ubuntu"
     elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
         echo "MacOSX"
