@@ -41,7 +41,7 @@ install_basics() {
     local installs
     case "$PLATFORM" in
         Ubuntu) for p in "${UBUNTU_INSTALLS[@]}"; do sudo apt-get install "$p"; done;;
-        MacOSX) for p in "${MACPORTS_INSTALLS[@]}"; do sudo ports install "$p"; done;;
+        MacOSX) for p in "${MACPORTS_INSTALLS[@]}"; do sudo port install "$p"; done;;
         *) abort "Invalid platform"
     esac
 }
@@ -68,11 +68,9 @@ install_templates() {
 
 ln_s() {
     local opts=$(
-        case "$PLATFORM" in
-            Ubuntu) echo "-sbT";;
-            MacOSX) echo "-sf";;
-            *) abort "Invalid platform"
-        esac
+        if   [[ "$PLATFORM" == "Ubuntu" ]]; then echo "-sbT"
+        elif [[ "$PLATFORM" == "MacOSX" ]]; then echo "-sf"
+        fi
     )
     ln "$opts" $1 $2
 }
