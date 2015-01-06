@@ -240,7 +240,6 @@ color_list(){
 # open
 if [[ -f /usr/bin/xdg-open ]]
 then alias open=/usr/bin/xdg-open
-elif grep "darwin" <<< "$OSTYPE" &>/dev/null
 fi
 alias o=open
 
