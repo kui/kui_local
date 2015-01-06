@@ -128,12 +128,11 @@ then
     [ $STY ] && alias s="screen -X focus; screen"
 fi
 
-alias ls="$(
-    if   ls -F --color &>/dev/null;  then echo "ls -F --color"
-    elif gls -F --color &>/dev/null; then echo "gls -F --color"
-    elif ls -F -G &>/dev/null;       then echo "ls -F -G"
-    fi
-)"
+if   ls -F --color &>/dev/null;  then alias ls="ls -F --color"
+elif gls -F --color &>/dev/null; then alias ls="gls -F --color"
+elif ls -F -G &>/dev/null;       then alias ls="ls -F -G"
+fi
+
 alias grep='grep --color'
 
 function markdown_preview(){
