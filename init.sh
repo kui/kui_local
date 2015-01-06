@@ -4,11 +4,9 @@
 MACPORTS_INSTALLS=(git screen zsh curl wget coreutils)
 UBUNTU_INSTALLS=(git screen zsh curl wget ssh build-essential)
 PLATFORM="$(
-    if which lsb_release; then
-        if lsb_release -a | grep '^Description' | grep 'Ubuntu'; then
-            echo "Ubuntu"
-        fi
-    elif grep "darwin" <<< "$OSTYPE"; then
+    if lsb_release -a | grep '^Description' | grep 'Ubuntu' &>/dev/null; then
+        echo "Ubuntu"
+    elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
         echo "MacOSX"
     else
         echo ""
@@ -22,15 +20,14 @@ main() {
     fi
 
     install_basics
-    git clone git@github.com:kui/kui_dotfiles.git "$BASE_DIR"
+    if [[ -e "$BASE_DIR" ]];
+    then cd "$BASE_DIR"; git push origin master
+    else git clone git@github.com:kui/kui_local.git "$BASE_DIR"
+    fi
     cd "$BASE_DIR"
 
     install_dotfiles
     install_templates
-
-    if [[ -n "$DISPLAY" ]]; then
-        setup_user_dir
-    fi
 
     echo "Success!!"
     echo "Next, see the following scripts: "
@@ -40,15 +37,15 @@ main() {
 install_basics() {
     local installs
     case "$PLATFORM" in
-        Ubuntu) for p in "${UBUNTU_INSTALLS[@]}"; apt-get install "$p";;
-        MacOSX) for p in "${MACPORTS_INSTALLS[@]}"; ports install "$p";;
+        Ubuntu) for p in "${UBUNTU_INSTALLS[@]}"; do sudo apt-get install "$p"; done;;
+        MacOSX) for p in "${MACPORTS_INSTALLS[@]}"; do sudo ports install "$p"; done;;
         *) abort "Invalid platform"
     esac
 }
 
 install_dotfiles() {
     local file
-    for file in dotfiles/*; do
+    for file in $(pwd)/dotfiles/*; do
         local dest="$HOME/.$(basename $file)"
         ln_s "$file" "$dest"
     done
@@ -66,28 +63,15 @@ install_templates() {
     done
 }
 
-setup_user_dir(){
-    mkdir -p "${HOME}/.config"
-    ln_s "user-dirs.dirs" "${HOME}/.config/user-dirs.dirs"
-
-    # create user dirs
-    local dir
-    for dir in $(grep '^XDG_' user-dirs.dirs | cut -d'=' -f2); do
-        dir="$(eval echo -e "$dir")"
-        [[ ! -e "$dir" ]] && mkdir -pv "$dir"
-    done
-}
-
-LN_OPTS=$(
-    case "$PLATFORM" in
-        Ubuntu) echo "-sbT";;
-        MacOSX) echo "-sf";;
-        *) abort "Invalid platform"
-    esac
-)
-
 ln_s() {
-    ln "$LN_OPTS" $1 $2
+    local opts=$(
+        case "$PLATFORM" in
+            Ubuntu) echo "-sbT";;
+            MacOSX) echo "-sf";;
+            *) abort "Invalid platform"
+        esac
+    )
+    ln "$opts" $1 $2
 }
 
 abort() {
