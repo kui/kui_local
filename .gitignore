@@ -1,0 +1,17 @@
+# -*- coding:utf-8 -*-
+\#*
+.\#*
+*~
+*.log
+.DS_Store
+Thumbs.db
+core
+TAGS
+/dotfiles/emacs.d/ac-comphist.dat
+/dotfiles/emacs.d/url
+/dotfiles/emacs.d/tramp
+/dotfiles/emacs.d/elpa
+/dotfiles/emacs.d/anything-c-adaptive-history
+/dotfiles/emacs.d/session.*
+/dotfiles/emacs.d/auto-save-list
+/dotfiles/emacs.d/.mc-lists.el
