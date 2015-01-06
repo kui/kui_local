@@ -64,20 +64,20 @@ path=(
 
 [ -z "$sudo_path" ] && typeset -xT SUDO_PATH sudo_path
 sudo_path=(
-    /opt/local/sbin
+    /opt/local/sbin(N-/)
     {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
     $sudo_path $path
 )
 
 [ -z "$ld_library_path" ] && typeset -xT LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
-    /usr/local/kui-avconv/lib
+    /usr/local/kui-avconv/lib(N-/)
     $ld_library_path
 )
 
 [ -z "$include" ] && typeset -xT INCLUDE include
 include=(
-    /usr/local/kui-avconv/include
+    /usr/local/kui-avconv/include(N-/)
     $include
 )
 
