@@ -1,6 +1,6 @@
 #!/bin/bash
 # -*- coding: utf-8-unix -*-
-set -eux
+set -eu
 
 BASE="$(cd "$(dirname $0)"; pwd)"
 
@@ -8,23 +8,26 @@ BASE="$(cd "$(dirname $0)"; pwd)"
 
 if is_ubuntu; then
     run sudo apt-get install build-essential gcc g++
-# elif is_mac_os_x; then
-#     run sudo port install "${MACPORTS_INSTALLS[@]}" || abort "Require MacPorts"
+elif is_mac_os_x; then
+    true
 else
     echo "Non supported platform" >&2
     exit 1
 fi
 
 TMP="/tmp/porg"
-mkdir -p "$TMP"
+run rm -frv "$TMP"
+run mkdir -p "$TMP"
 
 cd "$TMP"
-wget "http://downloads.sourceforge.net/project/porg/porg-0.7.tar.gz"
-tar zxf porg-0.7.tar.gz
+run pwd
+run wget "http://downloads.sourceforge.net/project/porg/porg-0.7.tar.gz"
+run tar zxf porg-0.7.tar.gz
 
 cd porg-0.7
-./configure
-make
-sudo make install
+run pwd
+run ./configure --disable-grop
+run make
+run sudo make install
 
 echo "Success"

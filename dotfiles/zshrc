@@ -72,12 +72,14 @@ sudo_path=(
 [ -z "$ld_library_path" ] && typeset -xT LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
     /usr/local/kui-avconv/lib(N-/)
+    /opt/local/lib(N-/)
     $ld_library_path
 )
 
 [ -z "$include" ] && typeset -xT INCLUDE include
 include=(
     /usr/local/kui-avconv/include(N-/)
+    /opt/local/include
     $include
 )
 

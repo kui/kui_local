@@ -14,10 +14,10 @@ run() {
     env "$@"
 }
 echo_green() {
-    echo "\e[32m${@}\e[39m"
+    echo $'\e[32m'"${@}"$'\e[0m'
 }
 echo_red() {
-    echo "\e[31m${@}\e[39m"
+    echo $'\e[31m'"${@}"$'\e[0m'
 }
 abort() {
     err "Abort: $@"
