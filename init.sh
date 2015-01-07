@@ -2,8 +2,8 @@
 # -*- coding:utf-8 -*-
 set -eu
 
-MACPORTS_INSTALLS=(git screen zsh curl wget coreutils findutils)
-UBUNTU_INSTALLS=(git screen zsh curl wget ssh build-essential)
+MACPORTS_INSTALLS=(git screen zsh curl wget coreutils findutils xz ctags)
+UBUNTU_INSTALLS=(git screen zsh curl wget ssh build-essential xz exuberant-ctags)
 BASE_DIR="$HOME/.dotfiles"
 LN="$(
     if which gln &>/dev/null

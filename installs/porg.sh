@@ -3,7 +3,6 @@
 set -eu
 
 BASE="$(cd "$(dirname $0)"; pwd)"
-
 . "${BASE}/commons.sh"
 
 if is_ubuntu; then

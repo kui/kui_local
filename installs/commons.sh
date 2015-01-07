@@ -9,9 +9,17 @@ is_mac_os_x() {
     [ "$(sw_vers -productName)" = "Mac OS X" ]
 }
 
+not() {
+    ! "$@"
+}
+
+has() {
+    type "$1" &>/dev/null
+}
+
 run() {
     echo_green $ "$@"
-    env "$@"
+    "$@"
 }
 echo_green() {
     echo $'\e[32m'"${@}"$'\e[0m'
