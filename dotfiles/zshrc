@@ -141,7 +141,7 @@ fi
 # MacPorts coreutils aliases
 if which port &>/dev/null; then
     # coreutils
-    cmds=('[' base64 basename cat chcon chgrp chmod chown chroot cksum comm
+    cmds=(base64 basename cat chcon chgrp chmod chown chroot cksum comm
           cp csplit cut date dd df dir dircolors dirname du echo env expand
           expr factor false fmt fold groups head hostid id install join kill
           link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup
@@ -150,8 +150,8 @@ if which port &>/dev/null; then
           sha384sum sha512sum shred shuf sleep sort split stat stdbuf stty
           sum sync tac tail tee test timeout touch tr true truncate tsort tty
           uname unexpand uniq unlink uptime users vdir wc who whoami yes)
-    # findutils
-    cmds=(find locate ldfind updatedb xargs $cmds)
+    # findutils, gsed
+    cmds=(find locate ldfind updatedb xargs sed $cmds)
     for cmd in "${cmds[@]}"
     do which "g$cmd" &>/dev/null && alias "$cmd=g$cmd"
     done
@@ -212,7 +212,7 @@ then
     # Cygwin 環境でのコピー（要動作テスト）
     copy_cmd="putclip < /tmp/screen-exchange"
 fi
-[ $copy_cmd ] && \
+[[ $copy_cmd ]] && \
     screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
 if which emacsclientw &> /dev/null
@@ -226,13 +226,13 @@ color_list(){
     for c in {000..015}
     do
         echo -n "\e[38;5;${c}m $c"
-        [ $((c%8)) -eq 7 ] && echo
+        [[ $((c%8)) -eq 7 ]] && echo
     done
 
     for c in {016..255}
     do
         echo -n "\e[38;5;${c}m $c"
-        [ $(((c-16)%6)) -eq 5 ] && echo
+        [[ $(((c-16)%6)) -eq 5 ]] && echo
     done
 }
 
@@ -243,7 +243,7 @@ fi
 alias o=open
 
 color_echo(){
-    if [ $# -lt 1 ]
+    if [[ $# -lt 1 ]]
     then
         (
             echo "usage: $0 COLOR [string...]"
@@ -282,7 +282,7 @@ color256(){
 }
 
 color256_echo(){
-    if [ $# -lt 3 ]
+    if [[ $# -lt 3 ]]
     then
         (
             echo "usage: $0 RED GREEN BLUE [string...]"
