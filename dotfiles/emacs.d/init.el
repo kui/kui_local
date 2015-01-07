@@ -174,19 +174,19 @@ PACKAGENAME(or FEATURE) and then execute `require'.
 If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
 available package."
   (unless package--initialized (package-initialize t))
-  (let ((pname (or packagename feature)))
-    (if (assq pname package-archive-contents)
-        (let nil
-          (unless (package-installed-p pname)
-            (unless package-archive-contents (package-refresh-contents))
-            (package-install pname))
-          (or (require feature filename t)
-              (if noerror nil
-                (error "Package `%s' does not provide the feature `%s'"
-                       (symbol-name pname) (symbol-name feature)))))
-      (if noerror nil
-        (error "Package `%s' is not available for installation"
-               (symbol-name feature))))))
+  (condition-case err
+      (let ((pname (or packagename feature)))
+        (if (assq pname package-archive-contents)
+            (progn
+              (unless (package-installed-p pname)
+                (unless package-archive-contents (package-refresh-contents))
+                (package-install pname))
+              (require feature filename noerror))
+          (error "Package `%s' is not available"
+               (symbol-name feature))))
+    (if noerror
+        (progn (message err) nil)
+      (error err))))
 
 ;; このファイル(init.el)を開く
 (defun kui/find-init-file ()
