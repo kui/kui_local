@@ -519,7 +519,7 @@ but if not, return nil."
                            :background nil
                            :inherit nil))
 
-     (when (require 'popup nil t)
+     (when (featurep 'popup)
 
        ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
        ;; https://gist.github.com/292827
@@ -605,7 +605,7 @@ but if not, return nil."
   )
 
 ;; whitespace-mode
-(when (require 'whitespace nil t)
+(when (featurep 'whitespace)
   ;; n 列以上はハイライトで警告
   ;; (setq whitespace-line-column 90)
 
@@ -923,84 +923,53 @@ but if not, return nil."
 ;; -------------------------------------------------------------------------
 ;; 色とか
 (when (kui/package-require 'color-theme nil nil t)
-  (color-theme-initialize)
+  (color-theme-initialize))
 
-  (when (kui/package-require 'color-theme-sanityinc-tomorrow)
-    (load-theme 'sanityinc-tomorrow-night t)
-    ;; (color-theme-sanityinc-tomorrow-night)
-    (set-face-attribute 'show-paren-match nil
-                        :inverse-video nil
-                        :bold t
-                        :foreground nil
-                        :background "#000000"
-                        :underline t)
-    (when (require 'anything nil t)
-      (set-face-attribute 'anything-header nil
-                          :inverse-video t
-                          :bold t
-                          :height 1.2))
-    (set-face-attribute 'highlight nil
-                        :inverse-video t
-                        :foreground "#81a2be"
-                        :background "#1d1f21")
-    (set-face-attribute 'hl-line nil
-                        :background "#113333"
-                        :inherit nil)
-    (eval-after-load "linum"
-      '(set-face-attribute 'linum nil
-                           :background "#000000"))
-    (unless window-system
-      (set-face-attribute 'mode-line nil
-                          :background "#444444")
-      (set-face-attribute 'hl-line nil
-                          :background "#262626"
-                          :inherit nil))
+(when (and (kui/package-require 'color-theme-sanityinc-tomorrow)
+           (featurep 'color-theme))
+  (load-theme 'sanityinc-tomorrow-night t))
 
-    (when (require 'git-gutter)
-      (set-face-attribute 'git-gutter:unchanged nil
-                          :background "brightblack"
-                          :underline  nil)
-      (dolist (ggface '(git-gutter:modified git-gutter:added git-gutter:deleted))
-        (set-face-attribute ggface nil :inherit 'git-gutter:unchanged)))
-    )
+(custom-set-faces
+ '(highlight
+   ((((background dark))
+     :background "#222244")))
+ '(show-paren-match
+   ((((background dark))
+     :inherit nil
+     :weight bold
+     :underline t
+     :background "black"
+     :foreground nil))))
 
-  (when nil ;(locate-library "color-theme-twilight")
-    (load-library "color-theme-twilight")
-    (color-theme-twilight)
-    (when (require 'anything nil t)
-      (set-face-attribute 'highlight nil
-                          :background "#191970"
-                          :bold t)
-      (set-face-attribute 'anything-header nil
-                          :height 1.3
-                          :foreground "white"
-                          :background "#4169e1"
-                          :bold t)
-      (set-face-attribute 'anything-match nil
-                          :foreground nil
-                          :background "#8b8b00"
-                          :bold t))
-    (set-face-attribute 'hl-line nil
-                        :background "#191970")
-    (set-face-attribute 'region nil
-                        :background "#4169e1")
-    (set-face-attribute 'show-paren-match nil
-                        :background "#2e8b57")
-    (set-face-attribute 'font-lock-comment-face nil
-                        :foreground "#cd6600")
-    (set-face-attribute 'font-lock-keyword-face nil
-                        :foreground "#ff6eb4")
-    (set-face-attribute 'markdown-header-face nil
-                        :height 1.1
-                        :foreground "#87ceff"
-                        :bold t)
-    (set-face-attribute 'markdown-header-rule-face nil
-                        :inherit 'markdown-header-face)
-    (set-face-attribute 'markdown-header-delimiter-face nil
-                        :inherit 'markdown-header-face)
-    (set-face-attribute 'whitespace-tab nil
-                        :background "#1f1f1f"))
-  )
+(unless window-system
+  (custom-set-faces
+   '(mode-line
+     ((((background dark))
+       :background "#444444")))
+   '(highlight
+     ((((background dark))
+       :background "#262626"
+       :inherit nil)))))
+
+(when (featurep 'helm)
+  (custom-set-faces
+   '(helm-buffer-directory
+     ((((background dark))
+       :foreground "#33ff33")))
+   '(helm-ff-directory
+     ((((background dark))
+       :foreground "#33ff33")))
+   '(helm-selection
+     ((t
+       :inherit 'highlight
+       :weight bold)))))
+
+(when (featurep 'git-gutter)
+  (custom-set-faces
+   '(git-gutter:unchanged ((t :background nil)))
+   '(git-gutter:modified  ((t :background nil)))
+   '(git-gutter:added     ((t :background nil)))
+   '(git-gutter:deleted   ((t :background nil)))))
 
 ;; -------------------------------------------------------------------------
 ;; window system がある時
