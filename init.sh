@@ -32,7 +32,7 @@ main() {
 }
 
 install_basics() {
-    if which lsb_release &>/dev/null && lsb_release -a | grep 'Ubuntu' &>/dev/null; then
+    if which lsb_release &>/dev/null && (lsb_release -a | grep 'Ubuntu') &>/dev/null; then
         run sudo apt-get install "${UBUNTU_INSTALLS[@]}"
     elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
         run sudo port install "${MACPORTS_INSTALLS[@]}" ||
@@ -68,10 +68,10 @@ run() {
 }
 
 echo_green() {
-    echo "\e[32m${@}\e[39m"
+    echo $'\e[32m'"${@}"$'\e[0m'
 }
 echo_red() {
-    echo "\e[31m${@}\e[39m"
+    echo $'\e[31m'"${@}"$'\e[0m'
 }
 abort() {
     err "Abort: $@"
