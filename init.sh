@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 set -eu
 
-MACPORTS_INSTALLS=(git screen zsh curl wget coreutils)
+MACPORTS_INSTALLS=(git screen zsh curl wget coreutils findutils)
 UBUNTU_INSTALLS=(git screen zsh curl wget ssh build-essential)
 BASE_DIR="$HOME/.dotfiles"
 LN="$(
@@ -19,6 +19,7 @@ main() {
     else run git clone git@github.com:kui/kui_local.git "$BASE_DIR"
     fi
     cd "$BASE_DIR"
+    run pwd
 
     run git submodule init
     run git submodule update
@@ -26,8 +27,8 @@ main() {
     install_dotfiles
     install_templates
 
-    echo "Success!!"
-    echo "Next, see the following scripts: "
+    echo_green "Success!!"
+    echo_green "Next, see the following scripts: "
     ls "$BASE_DIR/installs"
 }
 
