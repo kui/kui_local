@@ -181,23 +181,22 @@ Examples:
 	(with-pkg 'git-gutter nil
 	  (global-git-gutter-mode t))
 
-	(with-pkg 'auto-complete-config (:packagename 'auto-complete)
+	(with-pkg 'auto-complete-config '(:packagename 'auto-complete)
 	  (ac-config-default)
 	  (global-auto-complete-mode t))
 
-	(with-pkg 'typescript-mode (:filename \"TypeScript\")
+	(with-pkg 'typescript-mode '(:filename \"TypeScript\")
 	  (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((a (kui/cons-to-assoc opts))
+  (let* ((a (kui/cons-to-assoc (eval opts)))
          (f (nth 1 (assoc :filename a)))
          (p (nth 1 (assoc :packagename a))))
     `(when (kui/package-require ,feature ,f ,p) ,@body)))
 (put 'with-pkg 'lisp-indent-function 2)
 
 (defun kui/cons-to-assoc (seq)
-  "Convert SEQ to a association list."
+  "Convert SEQ to an association list."
   (let ((k (nth 0 seq))
         (v (nth 1 seq)))
-    (message "%s=%s" k v)
     (if seq
         (cons (list k v)
               (kui/cons-to-assoc (cdr (cdr seq))))
