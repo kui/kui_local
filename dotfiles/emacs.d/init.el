@@ -180,6 +180,7 @@ available package."
   "Install `package' and require FRETURE. Execute BODY, If FEATURE was found.
 
 Examples:
+
 	(with-pkg 'git-gutter
 	  (global-git-gutter-mode t))
 
@@ -322,7 +323,6 @@ uncomment the current line"
 ;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
-  ;; (find-if (lambda (cmd) (executable-find cmd)) seq))
   (find-if 'executable-find seq))
 
 (defun kui/find-buffer-if (func)
@@ -336,7 +336,6 @@ Return nil if FUNC did not return non-nil with any buffer."
 Return nil if not found BNAME buffer."
   (kui/find-buffer-if
    (lambda (b) (string-equal bname (buffer-name b)))))
-;; (kui/find-buffer-by-name "*scratch*")
 
 (defun kui/find-buffer-by-name-regexp (bname-regexp)
   "Return buffer named a name matched BNAME-REGEXP.
