@@ -575,8 +575,8 @@ but if not, return nil."
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
   (global-set-key "\C-o" 'helm-buffers-list)
-  (global-set-key "\M-o" 'helm-occur)
   (global-set-key "\M-i" 'helm-imenu)
+  (global-set-key "\C-s" 'helm-occur)
   (global-set-key "\M-x" 'helm-M-x)
 
   (eval-after-load 'helm
@@ -782,7 +782,6 @@ but if not, return nil."
 (setq css-indent-offset 2)
 (add-to-list 'ac-modes 'css-mode)
 
-
 ;; scss-mode
 (when (kui/autoload-if-exist 'scss-mode "scss-mode")
   (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
@@ -914,10 +913,10 @@ but if not, return nil."
      :background "#112244")))
  '(show-paren-match
    ((((background dark))
+     :inverse-video t
      :inherit nil
-     :weight bold
-     :underline t
-     :background "black"
+     :weight ultra-bold
+     :background nil
      :foreground nil))))
 
 (unless window-system
