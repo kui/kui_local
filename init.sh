@@ -9,12 +9,11 @@ UBUNTU_INSTALLS=(
     git screen zsh curl wget ssh build-essential xz exuberant-ctags
 )
 BASE_DIR="$HOME/.dotfiles"
-LN="$(
-    if which gln &>/dev/null
-    then echo gln
-    else echo ln
-    fi
-)"
+LN=
+if which gln &>/dev/null
+then LN=gln
+else LN=ln
+fi
 
 main() {
     install_basics

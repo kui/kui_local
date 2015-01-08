@@ -1,6 +1,5 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
-
-;; (add-to-list 'load-path "~/.emacs.d")
+(require 'cl)
 
 ;; パッケージ管理
 (require 'package)
@@ -10,12 +9,8 @@
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
-;; emacs のパッケージを一番初めにインストールするためのフラグ
-;; コマンド: emacs -q --batch --eval '(setq kui/install-mode-p t)' --load ~/.emacs.d/init.el
-;; でインストールできる
-(defvar kui/install-mode-p nil)
-(if kui/install-mode-p
-    (package-refresh-contents))
+(unless package-archive-contents
+  (package-refresh-contents))
 
 ;; 言語設定は環境変数に依存
 (set-language-environment nil)
@@ -157,7 +152,7 @@ if NON-INTERACTIVE is non-nil, update all package without interaction."
     (if (not pkg-list)
         (message "No update available package")
       (dolist (pkg-name pkg-list)
-        (if (or non-interactive
+        (if (or non-interactivep
                 (y-or-n-p (format "update package?: %s" pkg-name)))
             (package-install pkg-name)))
       (package-initialize))))
@@ -173,20 +168,40 @@ If PACKAGENAME(or FEATURE) not installed, execute `package-install' with
 PACKAGENAME(or FEATURE) and then execute `require'.
 If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
 available package."
-  (unless package--initialized (package-initialize t))
   (condition-case err
       (let ((pname (or packagename feature)))
-        (if (assq pname package-archive-contents)
-            (progn
-              (unless (package-installed-p pname)
-                (unless package-archive-contents (package-refresh-contents))
-                (package-install pname))
-              (require feature filename noerror))
-          (error "Package `%s' is not available"
-               (symbol-name feature))))
-    (if noerror
-        (progn (message err) nil)
-      (error err))))
+        (unless (package-installed-p pname) (package-install pname))
+        (require feature filename noerror))
+    (error (if noerror nil (error (cadr err))))))
+
+(defmacro with-pkg (feature &optional opts &rest body)
+  "Install `package' and require FRETURE. Execute BODY, If FEATURE was found.
+
+Examples:
+	(with-pkg 'git-gutter nil
+	  (global-git-gutter-mode t))
+
+	(with-pkg 'auto-complete-config (:packagename 'auto-complete)
+	  (ac-config-default)
+	  (global-auto-complete-mode t))
+
+	(with-pkg 'typescript-mode (:filename \"TypeScript\")
+	  (add-hook 'typescript-mode-hook (lambda () ... )))"
+  (let* ((a (kui/cons-to-assoc opts))
+         (f (nth 1 (assoc :filename a)))
+         (p (nth 1 (assoc :packagename a))))
+    `(when (kui/package-require ,feature ,f ,p) ,@body)))
+(put 'with-pkg 'lisp-indent-function 2)
+
+(defun kui/cons-to-assoc (seq)
+  "Convert SEQ to a association list."
+  (let ((k (nth 0 seq))
+        (v (nth 1 seq)))
+    (message "%s=%s" k v)
+    (if seq
+        (cons (list k v)
+              (kui/cons-to-assoc (cdr (cdr seq))))
+      nil)))
 
 ;; このファイル(init.el)を開く
 (defun kui/find-init-file ()
@@ -296,7 +311,8 @@ uncomment the current line"
 ;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
-  (find-if (lambda (cmd) (executable-find cmd)) seq))
+  ;; (find-if (lambda (cmd) (executable-find cmd)) seq))
+  (find-if 'executable-find seq))
 
 (defun kui/find-buffer-if (func)
   "Return buffer if FUNC return non-nil.
@@ -629,7 +645,7 @@ but if not, return nil."
                                  "ctags")))
   )
 
-(when (kui/package-require 'multiple-cursors)
+(when (kui/package-require 'multiple-cursors nil nil t)
   (multiple-cursors-mode)
   (global-set-key "\M-mn" 'mc/mark-next-like-this)
   (global-set-key "\M-mp" 'mc/mark-previous-like-this)
@@ -645,6 +661,10 @@ but if not, return nil."
 (define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
 (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
 (define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
+;; (add-hook 'lisp-mode-hook
+;; 	   (lambda ()
+;; 	     (set (make-local-variable 'lisp-indent-function)
+;; 		  'common-lisp-indent-function)))
 
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
@@ -780,7 +800,8 @@ but if not, return nil."
 
 ;; css-mode
 (setq css-indent-offset 2)
-(add-to-list 'ac-modes 'css-mode)
+(when (package-installed-p 'auto-complete)
+  (add-to-list 'ac-modes 'css-mode))
 
 ;; scss-mode
 (when (kui/autoload-if-exist 'scss-mode "scss-mode")
@@ -825,7 +846,8 @@ but if not, return nil."
        )))
 
 ;; html-mode
-(add-to-list 'ac-modes 'html-mode)
+(when (package-installed-p 'auto-complete)
+  (add-to-list 'ac-modes 'html-mode))
 
 ;; multi-web-mode
 (when (kui/autoload-if-exist 'multi-web-mode "multi-web-mode")
@@ -898,7 +920,7 @@ but if not, return nil."
 (when (kui/package-require 'color-theme nil nil t)
   (color-theme-initialize))
 
-(when (and (kui/package-require 'color-theme-sanityinc-tomorrow)
+(when (and (kui/package-require 'color-theme-sanityinc-tomorrow nil nil t)
            (featurep 'color-theme))
   (load-theme 'sanityinc-tomorrow-night t))
 
