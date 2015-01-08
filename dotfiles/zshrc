@@ -212,7 +212,7 @@ then
     # Cygwin 環境でのコピー（要動作テスト）
     copy_cmd="putclip < /tmp/screen-exchange"
 fi
-[[ $copy_cmd ]] && \
+[[ -n "$copy_cmd" ]] && \
     screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
 if which emacsclientw &> /dev/null
