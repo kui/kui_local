@@ -30,6 +30,8 @@ if [[ ! -f ~/.rbenv/default-gems ]]; then
 bundler
 rake
 pry
+pry-doc >=0.6.0
+method_source >=0.8.2
 EOF
 fi
 

@@ -379,19 +379,6 @@ but if not, return nil."
 (when (kui/package-require 'git-blame nil nil t)
   )
 
-;; linum & hlinum
-;; (when (kui/autoload-if-exist 'linum-mode "linum")
-;;   ;; linum-mode が発動するフック一覧
-;;   (dolist (hook '(lisp-interaction-mode-hook ruby-mode-hook))
-;;     (add-hook hook (lambda () (linum-mode 1))))
-;;   (setq linum-delay t)
-;;   (eval-after-load "linum"
-;;     (lambda ()
-;;       ;; 遅延評価することで動作を軽快に
-;;       (defadvice linum-schedule (around my-linum-schedule () activate)
-;;         (run-with-idle-timer 0.2 nil #'linum-update-current))))
-;;   )
-
 ;; popup
 (when (kui/package-require 'popup nil nil t))
 
@@ -605,22 +592,17 @@ but if not, return nil."
   )
 
 ;; whitespace-mode
-(when (featurep 'whitespace)
+(when (require 'whitespace nil t)
   ;; n 列以上はハイライトで警告
   ;; (setq whitespace-line-column 90)
 
   (setq whitespace-style
         '(face ;; faceを使って視覚化する。
-          ;; 行末の空白
-          trailing
-          ;; 長すぎる行のうち whitespace-line-column 以降部分をハイライト
-          ;; lines-tail
-          ;; タブ
+          trailing ;; 行末の空白
+          ;; lines-tail ;; 長すぎる行のうち whitespace-line-column 以降部分をハイライト
           tabs
           tab-mark
-          ;; タブの前にあるスペース
           ;; space-before-tab
-          ;; タブの後にあるスペース
           ;; space-after-tab
           ))
 
@@ -718,35 +700,27 @@ but if not, return nil."
   (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode))
 
   (eval-after-load "ruby-mode"
-    '(let nil
+    '(let ()
        (setq ruby-deep-indent-paren nil)
 
-       (when (require 'flymake-ruby nil t)
-         (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+       (defun kui/ruby-init ()
+         (flycheck-mode)
+         (message "hoge")
+         (electric-pair-mode t)
+         (electric-indent-mode t))
+       (add-hook 'ruby-mode-hook 'kui/ruby-init)
 
-       (when (and nil (executable-find "rbenv")
+       (when (kui/package-require 'robe nil nil t)
+         (add-hook 'ruby-mode-hook 'robe-mode)
+         (add-hook 'robe-mode-hook 'ac-robe-setup))
+
+       (when (and (executable-find "rbenv")
                   (kui/package-require 'rbenv nil nil t))
          (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
-       (defun ruby-mode-set-encoding () ())
-
-       (let ((rhome (expand-file-name "~/.rsense.d/rsense-0.3")))
-         (if (file-directory-p rhome)
-             (let nil
-               (message "try to load rsense")
-               (setq rsense-home rhome)
-               (add-to-list 'load-path (concat rsense-home "/etc"))
-               (when (require 'rsense nil t)
-                 (message "done (rsense)")
-                 (add-hook 'ruby-mode-hook
-                           (lambda ()
-                             (add-to-list 'ac-sources 'ac-source-rsense-method)
-                             (add-to-list 'ac-sources 'ac-source-rsense-constant)))))
-           (message "cant not found rsense")))
-
-       ;; (when (require 'robe nil t)
-       ;;   (add-hook 'ruby-mode-hook 'robe-mode)
-       ;;   (add-to-list 'ac-sources 'ac-source-robe))
+       (when (kui/package-require 'ruby-block nil nil t)
+         (setq ruby-block-highlight-toggle 'overlay)
+         (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
        ))
   )
 
@@ -932,7 +906,12 @@ but if not, return nil."
 (custom-set-faces
  '(highlight
    ((((background dark))
-     :background "#222244")))
+     :upperline t
+     :underline t
+     :background "#441133")))
+ '(hl-line
+   ((((background dark))
+     :background "#112244")))
  '(show-paren-match
    ((((background dark))
      :inherit nil
